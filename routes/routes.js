@@ -1,8 +1,9 @@
 module.exports = (app) => {
   const { body, validationResult } = require('express-validator');
+  
 
   const Product = require('../models/product-model.js');
-  const {
+  var {
     postLimit,
     totalProducts
   } = require('../middlewares/middleware.js');
@@ -29,8 +30,6 @@ module.exports = (app) => {
 
   app.route("/products/add-new-product")
     .post(
-      postLimit,
-
       body('title').exists({
         checkFalsy: true
       }),
@@ -38,6 +37,7 @@ module.exports = (app) => {
       body('price').exists({
         checkFalsy: true
       }),
+      postLimit,
 
       (req, res) => {
         //checking all fields are filled
@@ -50,8 +50,12 @@ module.exports = (app) => {
         //   })
         // }
 
+        // console.log(req.body);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+          //bcz middleware postLimit is increasing it even in case of error --
+          // totalProducts--;
+          // console.log(totalProducts);
           return res.status(400).json({ errors: errors.array() });
         }
 

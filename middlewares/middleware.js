@@ -2,10 +2,6 @@
 // ...rest of the initial code omitted for simplicity.
 const { body, validationResult } = require('express-validator');
 
-
-
-
-
 const Product = require('../models/product-model.js');
 
 var totalProducts = 0;
@@ -21,7 +17,7 @@ query.count(function(err, count) {
 
 
 function postLimit(req, res, next) {
-  totalProducts++;
+  // totalProducts++;
   console.log(totalProducts);
   if (totalProducts < 6) {
     console.log(req.body);
