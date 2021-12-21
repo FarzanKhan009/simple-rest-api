@@ -1,31 +1,29 @@
 module.exports = (app) => {
-  const { body, validationResult } = require('express-validator');
-  
+  const {
+    body,
+    validationResult
+  } = require('express-validator');
+
 
   const Product = require('../models/product-model.js');
-  var {
+  let {
     postLimit,
     totalProducts
   } = require('../middlewares/middleware.js');
+  console.log(totalProducts);
 
   app.route("/products")
     .get((req, res) => {
-
-      // console.log(req.body)
       Product.find((err, foundProducts) => {
         if (!err) {
-          // console.log(req);
-          // res.send(foundProducts);
           res.send({
             data: foundProducts,
-            total: totalProducts
+            total: foundProducts.length
           });
         } else {
           res.status(404).send('Not Found');
-          // res.send(err);
         }
       })
-
     })
 
   app.route("/products/add-new-product")
@@ -33,32 +31,18 @@ module.exports = (app) => {
       body('title').exists({
         checkFalsy: true
       }),
-      // password must be at least 5 chars long
       body('price').exists({
         checkFalsy: true
       }),
       postLimit,
 
       (req, res) => {
-        //checking all fields are filled
-        // if ((req.body.title == null || req.body.title.length <= 0) || (req.body.price == null || req.body.price.length <= 0) || (req.body.description == null || req.body.description.length <= 0)) {
-        //
-        //   return res.status(400).send({
-        //     Error: 400,
-        //     Message: "Bad Request",
-        //     Description: "Handling POST request at backend, so you can't miss any of the required field. Or the field cannot be empty."
-        //   })
-        // }
-
-        // console.log(req.body);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-          //bcz middleware postLimit is increasing it even in case of error --
-          // totalProducts--;
-          // console.log(totalProducts);
-          return res.status(400).json({ errors: errors.array() });
+          return res.status(400).json({
+            errors: errors.array()
+          });
         }
-
         const newProduct = new Product({
           title: req.body.title,
           price: req.body.price,
@@ -92,7 +76,7 @@ module.exports = (app) => {
               if (!err) {
                 res.send({
                   data: foundProducts,
-                  total: totalProducts
+                  total: foundProducts.length
                 });
               } else {
                 res.status(502).send({
@@ -100,12 +84,10 @@ module.exports = (app) => {
                   Message: "Bad Gateway",
                   Description: "Couldnot connect to database"
                 })
-                // res.send(err);
               }
             })
             .limit(Number(keyStr[1]))
           return;
-          // console.log();
         }
         Product.findOne({
           title: req.params.productTitle
@@ -120,24 +102,27 @@ module.exports = (app) => {
     )
 
     .put(
+      body('title').exists({
+        checkFalsy: true
+      }),
+      body('price').exists({
+        checkFalsy: true
+      }),
       (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({
+            errors: errors.array()
+          });
+        }
         const query = {
           title: req.params.productTitle
-        }; //your query here
-
-        if (req.body.title == null || req.body.price == null || req.body.description == null) {
-          // console.log(req.body.description)
-          return res.status(400).send({
-            Error: 400,
-            Message: "Bad Request",
-            Description: "Handling PUT request at backend, so you can't miss any of the required field."
-          })
-        }
+        };
         const update = {
           title: req.body.title,
           price: req.body.price,
           description: req.body.description
-        }; //your update in json here
+        };
 
         Product.findOneAndUpdate(query, update, {
           new: true
@@ -156,22 +141,18 @@ module.exports = (app) => {
     .delete(
       (req, res) => {
         console.log("Deleting...");
-        console.log(req.body);
         Product.deleteOne({
             title: req.params.productTitle
           },
           function(err) {
             if (!err) {
-              totalProducts--
               res.send("Deleted successfully");
-              // console.log(err);
             } else {
               res.status(502).send({
                 Error: 502,
                 Message: "Bad Gateway",
                 Description: "Couldnot connect to database"
               })
-              // res.send("Couldnt delete" + err);
             }
           });
       }

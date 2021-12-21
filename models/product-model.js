@@ -11,7 +11,4 @@ const productsSchema = {
   description: String
 };
 
-
-
-
 module.exports = mongoose.model("Product", productsSchema);
