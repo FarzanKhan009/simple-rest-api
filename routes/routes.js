@@ -74,10 +74,20 @@ module.exports = (app) => {
         if (keyStr[0] == "limit") {
           Product.find((err, foundProducts) => {
               if (!err) {
-                res.send({
-                  data: foundProducts,
-                  total: foundProducts.length
+                //just adding it for the sack of corection until new loic is developed, total count being problem
+                Product.find().count(function(err, count) {
+                  if (!err) {
+                    res.send({
+                      data: foundProducts,
+                      total: count
+                    });
+                  }
                 });
+
+                // res.send({
+                //   data: foundProducts,
+                //   total: foundProducts.length
+                // });
               } else {
                 res.status(502).send({
                   Error: 502,
