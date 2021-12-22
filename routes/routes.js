@@ -12,6 +12,34 @@ module.exports = (app) => {
   } = require('../middlewares/middleware.js');
   console.log(totalProducts);
 
+  app.route("/")
+    .get((req, res) => {
+      res.send(`
+            <div>
+            <h3>simple - express - api task</h3>
+            <br>
+            <h4>Farzan Khan at CodeFreaks</h4>
+            <br>
+            <p>API is able to handle requests below: -
+            <br>
+            GET: localhost: 3000 / products
+            <br>
+            GET: localhost: 3000 / products / limit = 'numbers of limited resources in int/numbe'
+            <br>
+            GET: localhost: 3000 / products / 'title of record you want to search'
+            <br>
+            POST: localhost: 3000 / products / add - new - product(body must carry all keys and values,
+              for title, price, and description)
+            <br>
+            PUT: localhost: 3000 / products / 'title of record/product you want to update'(body must carry all keys and values,
+              for title, price, and description)
+            <br>
+            DELETE: localhost: 3000 / products / 'title of record/product you want to delete'
+            </p>
+            </div>
+          `)
+    })
+
   app.route("/products")
     .get((req, res) => {
       Product.find((err, foundProducts) => {
