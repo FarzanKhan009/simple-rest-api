@@ -1,7 +1,8 @@
 const Product = require('../models/product-model.js');
-var totalProducts = 0;
-function getTotal(){
-  return totalProducts;
+var totalProducts;
+async function getTotal(){
+  total= await Product.countDocuments({});
+  return total;
 }
 
 // var query = Product.find().count((err, count)=>{
@@ -21,12 +22,13 @@ query.count(function(err, count) {
   }
 });
 
-function postLimit(req, res, next) {
-  if (getTotal() < 6) {
-    console.log(req.body);
+async function postLimit(req, res, next) {
+  totalProducts =await getTotal();
+  // totalProducts= total;
+  if (totalProducts < 5) {
     next();
   } else {
-    console.log("Total products reached 5, cant add anymore: \n" + req.body);
+    console.log("Total products reached 5");
     res.status(429).send({
       Error: 429,
       Message: "Too Many Requests"
